@@ -8,20 +8,21 @@ namespace ServerMyFitnessApp
 {
      public static class Crypting
     {
-        public static byte[] EncryptStringToBytes(string plainText, byte[] Key, byte[] IV)
+        public static byte[] EncryptStringToBytes(string plainText)
         {
             // Check arguments.
             if (plainText == null || plainText.Length <= 0)
                 throw new ArgumentNullException("plainText");
-            if (Key == null || Key.Length <= 0)
-                throw new ArgumentNullException("Key");
-            if (IV == null || IV.Length <= 0)
-                throw new ArgumentNullException("IV");
             byte[] encrypted;
             // Create an Rijndael object
             // with the specified key and IV.
             using (Rijndael rijAlg = Rijndael.Create())
             {
+
+                var Key = new byte[32]
+                    {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+                var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
+
                 rijAlg.Key = Key;
                 rijAlg.IV = IV;
 
@@ -48,15 +49,11 @@ namespace ServerMyFitnessApp
             return encrypted;
         }
 
-        public static string DecryptStringFromBytes(byte[] cipherText, byte[] Key, byte[] IV)
+        public static string DecryptStringFromBytes(byte[] cipherText)
         {
             // Check arguments.
             if (cipherText == null || cipherText.Length <= 0)
                 throw new ArgumentNullException("cipherText");
-            if (Key == null || Key.Length <= 0)
-                throw new ArgumentNullException("Key");
-            if (IV == null || IV.Length <= 0)
-                throw new ArgumentNullException("IV");
 
             // Declare the string used to hold
             // the decrypted text.
@@ -66,6 +63,10 @@ namespace ServerMyFitnessApp
             // with the specified key and IV.
             using (Rijndael rijAlg = Rijndael.Create())
             {
+
+                var Key = new byte[32]
+                    {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+                var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
                 rijAlg.Key = Key;
                 rijAlg.IV = IV;
 
@@ -91,5 +92,55 @@ namespace ServerMyFitnessApp
             return plaintext;
         }
 
+
+        public static string EncryptStringToString(string plainText)
+        {
+            // Check arguments.
+            if (plainText == null || plainText.Length <= 0)
+                throw new ArgumentNullException("plainText");
+            byte[] encrypted;
+            // Create an Rijndael object
+            // with the specified key and IV.
+            using (Rijndael rijAlg = Rijndael.Create())
+            {
+
+                var Key = new byte[32]
+                    {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+                var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
+
+                rijAlg.Key = Key;
+                rijAlg.IV = IV;
+
+                // Create an encryptor to perform the stream transform.
+                ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
+
+                // Create the streams used for encryption.
+                using (MemoryStream msEncrypt = new MemoryStream())
+                {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        {
+
+                            //Write all data to the stream.
+                            swEncrypt.Write(plainText);
+                        }
+                        encrypted = msEncrypt.ToArray();
+                    }
+                }
+            }
+
+            // Return the encrypted bytes from the memory stream.
+
+            string converted = Encoding.UTF8.GetString(encrypted, 0, encrypted.Length);
+
+            return converted;
+        }
+
     }
+
+
+
+
+
 }

@@ -54,7 +54,7 @@ namespace ServerMyFitnessApp
                 byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
 
 
-                String Decrypted = ServerMyFitnessApp_Crypting.DecryptStringFromBytes(PartialBuffer, Key, IV);
+                String Decrypted = ServerMyFitnessApp_Crypting.DecryptStringFromBytes(PartialBuffer);
                 ;
 
                 totalBuffer += Decrypted;
@@ -120,12 +120,15 @@ namespace ServerMyFitnessApp
                 case "FitnessClientRegister":
                     string RegisterUsername = packetData[1];
                     string RegisterPassword = packetData[2];
-                    Console.WriteLine("Received a register packet!");
-                    StreamWriter sw = new StreamWriter("../../../LoginDB.txt" , true);
-                    sw.WriteLine(RegisterUsername + "||" + RegisterPassword);
-                    sw.Close();
-                    
+                    string EncryptedUsernameString = Crypting.EncryptStringToString(RegisterUsername);
+                    string EncryptedPasswordString = Crypting.EncryptStringToString(RegisterPassword);
+                    Console.WriteLine("Received a register packet! Writing this register to our .txt DB file ");
 
+
+                    StreamWriter sw = new StreamWriter("../../../LoginDB.txt" , true);
+                    sw.WriteLine(EncryptedUsernameString + "||" + EncryptedPasswordString);
+                    
+                    sw.Close();
                     break;
 
 
@@ -144,14 +147,11 @@ namespace ServerMyFitnessApp
 
         public void Write(string data)
         {
-            var Key = new byte[32]
-                {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
-            var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
-
+            
 
             var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
 
-            var dataStringEncrypted = ServerMyFitnessApp_Crypting.EncryptStringToBytes(data + "\r\n\r\n", Key, IV);
+            var dataStringEncrypted = ServerMyFitnessApp_Crypting.EncryptStringToBytes(data + "\r\n\r\n");
 
 
             Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
