@@ -20,7 +20,7 @@ namespace ClientMyFitnessApp
 
         public FoodItem(string name, string category, double kcal, double fat, double fibers, string foodContents)
         {
-            string Name = name;
+            Name = name;
             Category = category;
             Kcal = kcal;
             Fat = fat;
