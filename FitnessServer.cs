@@ -13,26 +13,12 @@ namespace ServerMyFitnessApp
 
         private static List<FitnessServerClient> clients = new List<FitnessServerClient>();
 
-        private static ArrayList FoodList;
+        
 
-       // private static List<FitnessServerClient> clients = new List<FitnessServerClient>();
+      
 
         static void Main(string[] args)
         {
-            //Retreiving some fooditems
-            // FoodList = new ArrayList();
-            // FoodList = FoodAPI.RetrieveFromFoodAPI("Light");
-            //
-            // Console.WriteLine("Foodlist size.." + FoodList.Count);
-            //
-            // for (int i = 0; i < FoodList.Count; i++)
-            // {
-            //     Console.WriteLine("Food Item " + i);
-            //     Console.WriteLine(FoodList[i].ToString());
-            //     Console.WriteLine(" ---------- ");
-            //    
-            // }
-
             Console.WriteLine("Starting server and waiting for clients.. on port 15243");
 
             listener = new TcpListener(IPAddress.Any, 15243);

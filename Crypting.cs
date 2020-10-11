@@ -88,7 +88,7 @@ namespace ServerMyFitnessApp
                     }
                 }
             }
-
+            string cleaned = plaintext.Replace("\n", "").Replace("\r", "");
             return plaintext;
         }
 
@@ -133,7 +133,7 @@ namespace ServerMyFitnessApp
             // Return the encrypted bytes from the memory stream.
 
             string converted = Encoding.UTF8.GetString(encrypted, 0, encrypted.Length);
-
+            string cleaned = converted.Replace("\n", "").Replace("\r", "");
             return converted;
         }
 
