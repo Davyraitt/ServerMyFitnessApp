@@ -58,7 +58,19 @@ namespace ServerMyFitnessApp
                         command.Parameters.AddWithValue("@kcal", completeFoodList[i].Kcal);
                         command.Parameters.AddWithValue("@fat", completeFoodList[i].Fat);
                         command.Parameters.AddWithValue("@fiber", completeFoodList[i].Fibers);
-                        command.Parameters.AddWithValue("@contents", "FoodContent");
+
+                        if (completeFoodList[i].FoodContents == null)
+                        {
+                            command.Parameters.AddWithValue("@contents", "No Food Content Avaiable");
+
+                        }
+
+                        else
+                        {
+                            command.Parameters.AddWithValue("@contents", completeFoodList[i].FoodContents);
+                        }
+
+
                         connection.Open();
                         int result = command.ExecuteNonQuery();
 
