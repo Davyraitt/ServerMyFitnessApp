@@ -12,10 +12,9 @@ namespace ServerMyFitnessApp
     public static class FoodAPI
     {
 
-        public static ArrayList RetrieveFromFoodAPI(string SearchingFor)
+        public static List<FoodItem> RetrieveFromFoodAPI(string SearchingFor)
         {
-            var ArrayListFood = new ArrayList();
-           
+            var ArrayListFood = new List<FoodItem>();
             //API Stuff
             var client = new RestClient("https://edamam-food-and-grocery-database.p.rapidapi.com/parser?ingr=" + SearchingFor);
             var request = new RestRequest(Method.GET);

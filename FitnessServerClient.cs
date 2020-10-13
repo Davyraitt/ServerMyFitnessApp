@@ -16,7 +16,6 @@ namespace ServerMyFitnessApp
 
     class FitnessServerClient
     {
-
         public bool isOnline { get; set; }
 
         public string UserName { get; set; }
@@ -25,7 +24,6 @@ namespace ServerMyFitnessApp
         private NetworkStream stream;
         private byte[] buffer = new byte[1024];
         private string totalBuffer = "";
-        private static ArrayList FoodList;
 
 
         public FitnessServerClient(TcpClient tcpClient)
@@ -34,30 +32,13 @@ namespace ServerMyFitnessApp
             this.isOnline = true;
             this.stream = this.tcpClient.GetStream();
 
-            new Thread(() =>
-            {
-                Thread.CurrentThread.IsBackground = true;
-                //Retreiving some fooditems
-                GetFoodWithAPI();
-
-            }).Start();
+            
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private void GetFoodWithAPI()
-        {
-            FoodList = new ArrayList();
-            FoodList = FoodAPI.RetrieveFromFoodAPI("Pizza");
-            Console.WriteLine("Foodlist size.." + FoodList.Count);
-            for (int i = 0; i < FoodList.Count; i++)
-            {
-                Console.WriteLine("Food Item " + i);
-                Console.WriteLine(FoodList[i].ToString());
-                Console.WriteLine(" ---------- ");
+       
 
-            }
-        }
 
         private void OnRead(IAsyncResult ar)
         {
@@ -92,6 +73,7 @@ namespace ServerMyFitnessApp
                 string[] packetData = Regex.Split(packet, "\r\n");
                 ProcessData(packetData);
             }
+
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
@@ -114,13 +96,16 @@ namespace ServerMyFitnessApp
                         string[] words = line.Split("SPLIT");
                         string templogin = words[0];
                         string temppassword = words[1];
-                        Console.WriteLine("Query: Does " + templogin + "match with " + Crypting.EncryptStringToString(LoginUsername));
-                        Console.WriteLine("Query: Does " + temppassword + "match with " + Crypting.EncryptStringToString(LoginPassword));
-                        if (templogin.Equals((Crypting.EncryptStringToString(LoginUsername))) && temppassword.Equals(Crypting.EncryptStringToString(LoginPassword)))
+                        Console.WriteLine("Query: Does " + templogin + "match with " +
+                                          Crypting.EncryptStringToString(LoginUsername));
+                        Console.WriteLine("Query: Does " + temppassword + "match with " +
+                                          Crypting.EncryptStringToString(LoginPassword));
+                        if (templogin.Equals((Crypting.EncryptStringToString(LoginUsername))) &&
+                            temppassword.Equals(Crypting.EncryptStringToString(LoginPassword)))
                         {
                             match = true;
-
                         }
+
                         counter++;
                     }
 
@@ -132,6 +117,7 @@ namespace ServerMyFitnessApp
                     {
                         Write("FitnessClientLogin\r\nerror\r\nIncorrect password");
                     }
+
                     file.Close();
 
 
@@ -148,17 +134,16 @@ namespace ServerMyFitnessApp
                         Console.WriteLine("Received a register packet! Writing this register to our .txt DB file ");
                         StreamWriter sw = new StreamWriter("../../../LoginDB.txt", true);
                         sw.WriteLine(EncryptedUsernameString + "SPLIT" + EncryptedPasswordString);
+                        Write("FitnessClientRegister\r\nok\r\nok");
                         sw.Close();
                     }
                     catch (Exception e)
                     {
-                        Write("FitnessClientLogin\r\nerror\r\nexception caught");
+                        Write("FitnessClientRegister\r\nerror\r\nexception caught");
                         throw;
                     }
-                    
+
                     break;
-
-
             }
         }
 
@@ -169,17 +154,15 @@ namespace ServerMyFitnessApp
                 Write("error");
                 return false;
             }
+
             return true;
         }
 
         public void Write(string data)
         {
-            
-
             var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
 
             var dataStringEncrypted = ServerMyFitnessApp_Crypting.EncryptStringToBytes(data + "\r\n\r\n");
-
 
             Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
 
