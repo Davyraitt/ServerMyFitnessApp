@@ -10,7 +10,6 @@ namespace ServerMyFitnessApp
 {
     class FitnessServer
     {
-
         private static TcpListener listener;
 
         private static List<FitnessServerClient> clients = new List<FitnessServerClient>();
@@ -24,6 +23,8 @@ namespace ServerMyFitnessApp
 
         static void Main(string[] args)
         {
+            //Database.ClearDatabaseOfUsers();
+
             Console.WriteLine("Starting server and waiting for clients.. on port 15243");
 
             new Thread(() =>
@@ -38,21 +39,17 @@ namespace ServerMyFitnessApp
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
             Console.ReadLine();
 
-            
 
             while (true)
             {
-
             }
-
         }
 
         private static void GetFoodWithAPI()
         {
-
             APIInit();
             FoodList = new List<FoodItem>();
-            
+
             for (int i = 0; i < FoodKeyWords.Count; i++)
             {
                 FoodList = FoodAPI.RetrieveFromFoodAPI((string) FoodKeyWords[i]);
@@ -61,7 +58,6 @@ namespace ServerMyFitnessApp
                 {
                     for (int j = 0; j < 3; j++)
                     {
-
                         CompleteFoodList.Add(FoodList[j]);
                     }
                 }
@@ -70,14 +66,11 @@ namespace ServerMyFitnessApp
                 {
                     for (int j = 0; j < FoodList.Count; j++)
                     {
-
                         CompleteFoodList.Add(FoodList[j]);
                     }
                 }
-
-               
             }
-            
+
 
             for (int i = 0; i < CompleteFoodList.Count; i++)
             {
@@ -89,7 +82,6 @@ namespace ServerMyFitnessApp
             Database.WriteFoodToDatabase(CompleteFoodList);
         }
 
-        
 
         private static void APIInit()
         {
@@ -97,7 +89,7 @@ namespace ServerMyFitnessApp
             CompleteFoodList = new List<FoodItem>();
 
             //Adding food we want to get from the API and then enter in the database
-            
+
             FoodKeyWords.Add("Pizza");
             FoodKeyWords.Add("Cabbage");
             FoodKeyWords.Add("Protein");
@@ -108,8 +100,9 @@ namespace ServerMyFitnessApp
             FoodKeyWords.Add("Cake");
             FoodKeyWords.Add("Spinach");
             FoodKeyWords.Add("Lettuce");
-
-
+            FoodKeyWords.Add("Chocolate");
+            FoodKeyWords.Add("Champagne");
+            FoodKeyWords.Add("Coffee");
         }
 
 

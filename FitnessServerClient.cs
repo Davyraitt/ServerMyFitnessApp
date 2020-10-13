@@ -88,6 +88,7 @@ namespace ServerMyFitnessApp
                     int counter = 0;
                     string LoginUsername = packetData[1];
                     string LoginPassword = packetData[2];
+
                     // Read the file and display it line by line.  
                     System.IO.StreamReader file = new System.IO.StreamReader(@"../../../LoginDB.txt");
                     bool match = false;
@@ -96,6 +97,7 @@ namespace ServerMyFitnessApp
                         string[] words = line.Split("SPLIT");
                         string templogin = words[0];
                         string temppassword = words[1];
+
                         Console.WriteLine("Query: Does " + templogin + "match with " +
                                           Crypting.EncryptStringToString(LoginUsername));
                         Console.WriteLine("Query: Does " + temppassword + "match with " +
@@ -129,11 +131,34 @@ namespace ServerMyFitnessApp
                     {
                         string RegisterUsername = packetData[1];
                         string RegisterPassword = packetData[2];
+                        string OtherData = packetData[3];
+
+                        Console.WriteLine("We received this string... " + OtherData);
+
+                        //Encrypting
                         string EncryptedUsernameString = Crypting.EncryptStringToString(RegisterUsername);
                         string EncryptedPasswordString = Crypting.EncryptStringToString(RegisterPassword);
                         Console.WriteLine("Received a register packet! Writing this register to our .txt DB file ");
                         StreamWriter sw = new StreamWriter("../../../LoginDB.txt", true);
                         sw.WriteLine(EncryptedUsernameString + "SPLIT" + EncryptedPasswordString);
+
+                        //Splitting the rest of the data 
+                        Console.WriteLine(OtherData);
+                        string[] words = OtherData.Split(';');
+
+                        int age = Int32.Parse(words[0]);
+                        int cm = Int32.Parse(words[1]);
+                        int kg = Int32.Parse(words[2]);
+                        string gender = words[3];
+
+                        // foreach (var word in words)
+                        // {
+                        //     System.Console.WriteLine($"<{word}>");
+                        //
+                        // }
+
+                        Database.WriteUserToDatabase(RegisterUsername, age, cm, kg, gender);
+
                         Write("FitnessClientRegister\r\nok\r\nok");
                         sw.Close();
                     }
@@ -144,6 +169,8 @@ namespace ServerMyFitnessApp
                     }
 
                     break;
+
+
             }
         }
 
