@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerMyFitnessApp", "ServerMyFitnessApp.csproj", "{E4F937F3-507A-40DB-A34F-6A07A2824E4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerMyFitnessApp", "ServerMyFitnessApp.csproj", "{E4F937F3-507A-40DB-A34F-6A07A2824E4E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientMyFitnessApp", "..\ClientMyFitnessApp\ClientMyFitnessApp.csproj", "{0EC6EC84-AE4F-478F-9E67-DC4C9606D834}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedClasses", "..\SharedClasses\SharedClasses.shproj", "{7CC79F30-4C8E-4447-B804-0DBC1E446E5D}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\SharedClasses\SharedClasses.projitems*{7cc79f30-4c8e-4447-b804-0dbc1e446e5d}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

@@ -25,9 +25,11 @@ namespace ServerMyFitnessApp
 
                 rijAlg.Key = Key;
                 rijAlg.IV = IV;
+                rijAlg.Padding = PaddingMode.Zeros;
 
                 // Create an encryptor to perform the stream transform.
                 ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
+
 
                 // Create the streams used for encryption.
                 using (MemoryStream msEncrypt = new MemoryStream())
@@ -39,6 +41,7 @@ namespace ServerMyFitnessApp
 
                             //Write all data to the stream.
                             swEncrypt.Write(plainText);
+                            swEncrypt.Close();
                         }
                         encrypted = msEncrypt.ToArray();
                     }
@@ -69,6 +72,7 @@ namespace ServerMyFitnessApp
                 var IV = new byte[16] { 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 };
                 rijAlg.Key = Key;
                 rijAlg.IV = IV;
+                rijAlg.Padding = PaddingMode.Zeros;
 
                 // Create a decryptor to perform the stream transform.
                 ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
@@ -84,6 +88,8 @@ namespace ServerMyFitnessApp
                             // Read the decrypted bytes from the decrypting stream
                             // and place them in a string.
                             plaintext = srDecrypt.ReadToEnd();
+                            srDecrypt.Close();
+                            
                         }
                     }
                 }
@@ -110,9 +116,12 @@ namespace ServerMyFitnessApp
 
                 rijAlg.Key = Key;
                 rijAlg.IV = IV;
+                rijAlg.Padding = PaddingMode.Zeros;
 
                 // Create an encryptor to perform the stream transform.
                 ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
+                
+                
 
                 // Create the streams used for encryption.
                 using (MemoryStream msEncrypt = new MemoryStream())
@@ -124,6 +133,7 @@ namespace ServerMyFitnessApp
 
                             //Write all data to the stream.
                             swEncrypt.Write(plainText);
+                            swEncrypt.Close();
                         }
                         encrypted = msEncrypt.ToArray();
                     }
