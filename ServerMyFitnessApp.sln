@@ -7,9 +7,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerMyFitnessApp", "Serve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientMyFitnessApp", "..\ClientMyFitnessApp\ClientMyFitnessApp.csproj", "{0EC6EC84-AE4F-478F-9E67-DC4C9606D834}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestsFitness", "..\UnitTestsFitness\UnitTestsFitness.csproj", "{E2438396-2B60-4058-9E1E-5C2DC8A7250E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestsFitness", "..\UnitTestsFitness\UnitTestsFitness.csproj", "{E2438396-2B60-4058-9E1E-5C2DC8A7250E}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedClass", "..\SharedClass\SharedClass.shproj", "{0C88FF27-8E31-40C8-8C98-351C825CC818}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\SharedClass\SharedClass.projitems*{0c88ff27-8e31-40c8-8c98-351c825cc818}*SharedItemsImports = 13
+		..\SharedClass\SharedClass.projitems*{0ec6ec84-ae4f-478f-9e67-dc4c9606d834}*SharedItemsImports = 4
+		..\SharedClass\SharedClass.projitems*{e4f937f3-507a-40db-a34f-6a07a2824e4e}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

@@ -9,10 +9,10 @@ using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using SharedClass;
 
 namespace ServerMyFitnessApp
 {
-    using ServerMyFitnessApp_Crypting = ServerMyFitnessApp.Crypting;
 
     class FitnessServerClient
     {
@@ -56,7 +56,7 @@ namespace ServerMyFitnessApp
 
                 byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
 
-                String Decrypted = ServerMyFitnessApp_Crypting.DecryptStringFromBytes(PartialBuffer);
+                String Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
 
                 totalBuffer += Decrypted;
             }
@@ -189,7 +189,7 @@ namespace ServerMyFitnessApp
         {
             var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
 
-            var dataStringEncrypted = ServerMyFitnessApp_Crypting.EncryptStringToBytes(data + "\r\n\r\n");
+            var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
 
             Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
 

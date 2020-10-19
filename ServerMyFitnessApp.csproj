@@ -30,4 +30,6 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <Import Project="..\SharedClass\SharedClass.projitems" Label="Shared" />
+
 </Project>
