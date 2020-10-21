@@ -1,24 +1,24 @@
-﻿using System;
+﻿using ClientMyFitnessApp;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using ClientMyFitnessApp;
 
 namespace ServerMyFitnessApp
 {
     class FitnessServer
     {
-        private static TcpListener listener;
+        private static TcpListener _listener;
 
-        private static List<FitnessServerClient> clients = new List<FitnessServerClient>();
+        private static List<FitnessServerClient> _clients = new List<FitnessServerClient>();
 
-        private static List<FoodItem> FoodList;
+        private static List<FoodItem> _foodList;
 
-        private static ArrayList FoodKeyWords;
+        private static ArrayList _foodKeyWords;
 
-        private static List<FoodItem> CompleteFoodList;
+        private static List<FoodItem> _completeFoodList;
 
 
         static void Main(string[] args)
@@ -34,9 +34,9 @@ namespace ServerMyFitnessApp
                 GetFoodWithAPI();
             }).Start();
 
-            listener = new TcpListener(IPAddress.Any, 15243);
-            listener.Start();
-            listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
+            _listener = new TcpListener(IPAddress.Any, 15243);
+            _listener.Start();
+            _listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
             Console.ReadLine();
 
 
@@ -48,76 +48,76 @@ namespace ServerMyFitnessApp
         private static void GetFoodWithAPI()
         {
             APIInit();
-            FoodList = new List<FoodItem>();
+            _foodList = new List<FoodItem>();
 
-            for (int i = 0; i < FoodKeyWords.Count; i++)
+            for (int i = 0; i < _foodKeyWords.Count; i++)
             {
-                FoodList = FoodAPI.RetrieveFromFoodAPI((string) FoodKeyWords[i]);
+                _foodList = FoodApi.RetrieveFromFoodApi((string)_foodKeyWords[i]);
 
-                if (FoodList.Count > 3)
+                if (_foodList.Count > 3)
                 {
                     for (int j = 0; j < 3; j++)
                     {
-                        CompleteFoodList.Add(FoodList[j]);
+                        _completeFoodList.Add(_foodList[j]);
                     }
                 }
 
                 else
                 {
-                    for (int j = 0; j < FoodList.Count; j++)
+                    for (int j = 0; j < _foodList.Count; j++)
                     {
-                        CompleteFoodList.Add(FoodList[j]);
+                        _completeFoodList.Add(_foodList[j]);
                     }
                 }
             }
 
 
-            for (int i = 0; i < CompleteFoodList.Count; i++)
+            for (int i = 0; i < _completeFoodList.Count; i++)
             {
                 Console.WriteLine("Food Item " + i);
-                Console.WriteLine(CompleteFoodList[i].ToString());
+                Console.WriteLine(_completeFoodList[i].ToString());
                 Console.WriteLine(" ---------- ");
             }
 
-            Database.WriteFoodToDatabase(CompleteFoodList);
+            Database.WriteFoodToDatabase(_completeFoodList);
         }
 
 
         private static void APIInit()
         {
-            FoodKeyWords = new ArrayList();
-            CompleteFoodList = new List<FoodItem>();
+            _foodKeyWords = new ArrayList();
+            _completeFoodList = new List<FoodItem>();
 
             //Adding food we want to get from the API and then enter in the database
 
-            FoodKeyWords.Add("Pizza");
-            FoodKeyWords.Add("Cabbage");
-            FoodKeyWords.Add("Protein");
-            FoodKeyWords.Add("Milk");
-            FoodKeyWords.Add("Yoghurt");
-            FoodKeyWords.Add("Shake");
-            FoodKeyWords.Add("Cheese");
-            FoodKeyWords.Add("Cake");
-            FoodKeyWords.Add("Spinach");
-            FoodKeyWords.Add("Lettuce");
-            FoodKeyWords.Add("Chocolate");
-            FoodKeyWords.Add("Champagne");
-            FoodKeyWords.Add("Coffee");
+            _foodKeyWords.Add("Pizza");
+            _foodKeyWords.Add("Cabbage");
+            _foodKeyWords.Add("Protein");
+            _foodKeyWords.Add("Milk");
+            _foodKeyWords.Add("Yoghurt");
+            _foodKeyWords.Add("Shake");
+            _foodKeyWords.Add("Cheese");
+            _foodKeyWords.Add("Cake");
+            _foodKeyWords.Add("Spinach");
+            _foodKeyWords.Add("Lettuce");
+            _foodKeyWords.Add("Chocolate");
+            _foodKeyWords.Add("Champagne");
+            _foodKeyWords.Add("Coffee");
         }
 
 
         private static void OnConnect(IAsyncResult ar)
         {
-            var tcpClient = listener.EndAcceptTcpClient(ar);
+            var tcpClient = _listener.EndAcceptTcpClient(ar);
             Console.WriteLine($"Client connected from {tcpClient.Client.RemoteEndPoint}");
             //check if the client already excists
-            clients.Add(new FitnessServerClient(tcpClient));
-            listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
+            _clients.Add(new FitnessServerClient(tcpClient));
+            _listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
         }
 
         internal static void Broadcast(string packet)
         {
-            foreach (var client in clients)
+            foreach (var client in _clients)
             {
                 client.Write(packet);
             }
@@ -125,7 +125,7 @@ namespace ServerMyFitnessApp
 
         internal static void Disconnect(FitnessServerClient client)
         {
-            clients.Remove(client);
+            _clients.Remove(client);
             Console.WriteLine("Client disconnected");
         }
     }

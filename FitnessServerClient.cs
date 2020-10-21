@@ -1,64 +1,58 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using SharedClass;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using SharedClass;
 
 namespace ServerMyFitnessApp
 {
 
     class FitnessServerClient
     {
-        public bool isOnline { get; set; }
+        public bool isOnline
+        {
+            get; set;
+        }
 
-        public string UserName { get; set; }
+        public string UserName
+        {
+            get; set;
+        }
 
-        private TcpClient tcpClient;
-        private NetworkStream stream;
-        private byte[] buffer = new byte[1024];
-        private string totalBuffer = "";
+        private TcpClient _tcpClient;
+        private NetworkStream _stream;
+        private byte[] _buffer = new byte[1024];
+        private string _totalBuffer = "";
 
 
         public FitnessServerClient(TcpClient tcpClient)
         {
-            this.tcpClient = tcpClient;
-            this.isOnline = true;
-            this.stream = this.tcpClient.GetStream();
-
-            
-
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            this._tcpClient = tcpClient;
+            isOnline = true;
+            _stream = this._tcpClient.GetStream();
+            _stream.BeginRead(_buffer, 0, _buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-       
+
 
 
         private void OnRead(IAsyncResult ar)
         {
             try
             {
-                int receivedBytes = stream.EndRead(ar);
-
-                string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-
-
+                int receivedBytes = _stream.EndRead(ar);
+                string receivedText = System.Text.Encoding.ASCII.GetString(_buffer, 0, receivedBytes);
                 for (int i = 0; i < receivedBytes; i++)
                 {
                     Console.WriteLine(receivedText[i]);
                 }
 
-                byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
-
-                String Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
-
-                totalBuffer += Decrypted;
+                byte[] PartialBuffer = _buffer.Take(receivedBytes).ToArray();
+                string Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
+                _totalBuffer += Decrypted;
             }
             catch (IOException)
             {
@@ -66,15 +60,15 @@ namespace ServerMyFitnessApp
                 return;
             }
 
-            while (totalBuffer.Contains("\r\n\r\n"))
+            while (_totalBuffer.Contains("\r\n\r\n"))
             {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
+                string packet = _totalBuffer.Substring(0, _totalBuffer.IndexOf("\r\n\r\n"));
+                _totalBuffer = _totalBuffer.Substring(_totalBuffer.IndexOf("\r\n\r\n") + 4);
                 string[] packetData = Regex.Split(packet, "\r\n");
                 ProcessData(packetData);
             }
 
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            _stream.BeginRead(_buffer, 0, _buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         private void ProcessData(string[] packetData)
@@ -86,8 +80,8 @@ namespace ServerMyFitnessApp
                     //init stuff
                     string line;
                     int counter = 0;
-                    string LoginUsername = packetData[1];
-                    string LoginPassword = packetData[2];
+                    string loginUsername = packetData[1];
+                    string loginPassword = packetData[2];
 
                     // Read the file and display it line by line.  
                     System.IO.StreamReader file = new System.IO.StreamReader(@"../../../LoginDB.txt");
@@ -95,15 +89,15 @@ namespace ServerMyFitnessApp
                     while ((line = file.ReadLine()) != null)
                     {
                         string[] words = line.Split("SPLIT");
-                        string templogin = words[0];
-                        string temppassword = words[1];
+                        string tempLogin = words[0];
+                        string tempPassword = words[1];
 
-                        Console.WriteLine("Query: Does " + templogin + "match with " +
-                                          Crypting.EncryptStringToString(LoginUsername));
-                        Console.WriteLine("Query: Does " + temppassword + "match with " +
-                                          Crypting.EncryptStringToString(LoginPassword));
-                        if (templogin.Equals((Crypting.EncryptStringToString(LoginUsername))) &&
-                            temppassword.Equals(Crypting.EncryptStringToString(LoginPassword)))
+                        Console.WriteLine("Query: Does " + tempLogin + "match with " +
+                                          Crypting.EncryptStringToString(loginUsername));
+                        Console.WriteLine("Query: Does " + tempPassword + "match with " +
+                                          Crypting.EncryptStringToString(loginPassword));
+                        if (tempLogin.Equals((Crypting.EncryptStringToString(loginUsername))) &&
+                            tempPassword.Equals(Crypting.EncryptStringToString(loginPassword)))
                         {
                             match = true;
                         }
@@ -129,22 +123,22 @@ namespace ServerMyFitnessApp
 
                     try
                     {
-                        string RegisterUsername = packetData[1];
-                        string RegisterPassword = packetData[2];
-                        string OtherData = packetData[3];
+                        string registerUsername = packetData[1];
+                        string registerPassword = packetData[2];
+                        string otherData = packetData[3];
 
-                        Console.WriteLine("We received this string... " + OtherData);
+                        Console.WriteLine("We received this string... " + otherData);
 
                         //Encrypting
-                        string EncryptedUsernameString = Crypting.EncryptStringToString(RegisterUsername);
-                        string EncryptedPasswordString = Crypting.EncryptStringToString(RegisterPassword);
+                        string encryptedUsernameString = Crypting.EncryptStringToString(registerUsername);
+                        string encryptedPasswordString = Crypting.EncryptStringToString(registerPassword);
                         Console.WriteLine("Received a register packet! Writing this register to our .txt DB file ");
                         StreamWriter sw = new StreamWriter("../../../LoginDB.txt", true);
-                        sw.WriteLine(EncryptedUsernameString + "SPLIT" + EncryptedPasswordString);
+                        sw.WriteLine(encryptedUsernameString + "SPLIT" + encryptedPasswordString);
 
                         //Splitting the rest of the data 
-                        Console.WriteLine(OtherData);
-                        string[] words = OtherData.Split(';');
+                        Console.WriteLine(otherData);
+                        string[] words = otherData.Split(';');
 
                         int age = Int32.Parse(words[0]);
                         int cm = Int32.Parse(words[1]);
@@ -157,14 +151,14 @@ namespace ServerMyFitnessApp
                         //
                         // }
 
-                        Database.WriteUserToDatabase(RegisterUsername, age, cm, kg, gender);
+                        Database.WriteUserToDatabase(registerUsername, age, cm, kg, gender);
 
                         Write("FitnessClientRegister\r\nok\r\nok");
                         sw.Close();
                     }
                     catch (Exception e)
                     {
-                        Write("FitnessClientRegister\r\nerror\r\nexception caught");
+                        Write("FitnessClientRegister\r\nerror\r\nexception caught" + e.Message);
                         throw;
                     }
 
@@ -174,7 +168,7 @@ namespace ServerMyFitnessApp
             }
         }
 
-        private bool assertPacketData(string[] packetData, int requiredLength)
+        private bool AssertPacketData(string[] packetData, int requiredLength)
         {
             if (packetData.Length < requiredLength)
             {
@@ -195,9 +189,9 @@ namespace ServerMyFitnessApp
 
             Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
 
-            stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
+            _stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
 
-            stream.Flush();
+            _stream.Flush();
         }
     }
 }

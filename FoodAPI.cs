@@ -1,45 +1,42 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using ClientMyFitnessApp;
+﻿using ClientMyFitnessApp;
 using Newtonsoft.Json;
 using RestSharp;
+using System.Collections.Generic;
 
 
 namespace ServerMyFitnessApp
 {
-    public static class FoodAPI
+    public static class FoodApi
     {
 
-        public static List<FoodItem> RetrieveFromFoodAPI(string SearchingFor)
+        public static List<FoodItem> RetrieveFromFoodApi(string searchingFor)
         {
-            var ArrayListFood = new List<FoodItem>();
+            var arrayListFood = new List<FoodItem>();
             //API Stuff
-            var client = new RestClient("https://edamam-food-and-grocery-database.p.rapidapi.com/parser?ingr=" + SearchingFor);
+            var client = new RestClient("https://edamam-food-and-grocery-database.p.rapidapi.com/parser?ingr=" + searchingFor);
             var request = new RestRequest(Method.GET);
             request.AddHeader("x-rapidapi-host", "edamam-food-and-grocery-database.p.rapidapi.com");
             request.AddHeader("x-rapidapi-key", "98c6907f94msh24117bf6f31b20ep1ed75fjsn320c530b2a08");
-            IRestResponse response = client.Execute(request);
-            string responsestring = response.Content;
-            Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(responsestring);
-            // Done with retreiving food
+            var response = client.Execute(request);
+            string responseString = response.Content;
+            var myDeserializedClass = JsonConvert.DeserializeObject<Root>(responseString);
+            // Done with retrieving food
 
             for (int i = 0; i < myDeserializedClass.hints.Count; i++)
             {
-                string foodname = myDeserializedClass.hints[i].food.label;
-                string foodcategory = myDeserializedClass.hints[i].food.category;
-                double foodkcal = myDeserializedClass.hints[i].food.nutrients.ENERC_KCAL;
-                double foodfat = myDeserializedClass.hints[i].food.nutrients.FAT;
-                double foodfiber = myDeserializedClass.hints[i].food.nutrients.FIBTG;
-                string foodcontents = myDeserializedClass.hints[i].food.foodContentsLabel;
+                string foodName = myDeserializedClass.hints[i].food.label;
+                string foodCategory = myDeserializedClass.hints[i].food.category;
+                double foodCalories = myDeserializedClass.hints[i].food.nutrients.ENERC_KCAL;
+                double foodFat = myDeserializedClass.hints[i].food.nutrients.FAT;
+                double foodFiber = myDeserializedClass.hints[i].food.nutrients.FIBTG;
+                string foodContents = myDeserializedClass.hints[i].food.foodContentsLabel;
 
-                FoodItem TempFoodItem = new FoodItem(foodname, foodcategory, foodkcal, foodfat, foodfiber, foodcontents);
+                var tempFoodItem = new FoodItem(foodName, foodCategory, foodCalories, foodFat, foodFiber, foodContents);
 
-                ArrayListFood.Add(TempFoodItem);
+                arrayListFood.Add(tempFoodItem);
             }
 
-            return ArrayListFood;
+            return arrayListFood;
         }
 
     }
