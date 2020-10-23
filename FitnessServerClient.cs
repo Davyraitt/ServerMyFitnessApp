@@ -88,7 +88,7 @@ namespace ServerMyFitnessApp
                     bool match = false;
                     while ((line = file.ReadLine()) != null)
                     {
-                        string[] words = line.Split("SPLIT");
+                        string[] words = line.Split(";");
                         string tempLogin = words[0];
                         string tempPassword = words[1];
 
@@ -136,7 +136,7 @@ namespace ServerMyFitnessApp
                         string encryptedPasswordString = Crypting.EncryptStringToString(registerPassword);
                         Console.WriteLine("Received a register packet! Writing this register to our .txt DB file ");
                         StreamWriter sw = new StreamWriter("../../../LoginDB.txt", true);
-                        sw.WriteLine(encryptedUsernameString + "SPLIT" + encryptedPasswordString);
+                        sw.WriteLine(encryptedUsernameString + ";" + encryptedPasswordString);
 
                         //Splitting the rest of the data 
                         Console.WriteLine(otherData);
