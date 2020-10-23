@@ -83,9 +83,9 @@ namespace ServerMyFitnessApp
                 "INSERT INTO dbo.UserInfo (Name,Age,Length,Weight,Gender,BMI,BMR) VALUES (@name,@age,@length,@weight,@gender,@bmi,@bmr)";
 
 
-            if (gender.Equals("Male")) bmr = 66 + weight * 13.7 + length * 1.8 - age * 6.8;
+            if (gender.Equals("Male")) bmr = 66.473 + (13.8 * weight) + (5.0033 * length) - (6.7550 * age);
 
-            if (gender.Equals("Female")) bmr = 655 + 74 * 9.6 + 170 * 1.8 - 25 * 4.7;
+            if (gender.Equals("Female")) bmr = 655.0955 + (9.5634 * weight) + (1.8496 * length) - (4.6756 * age);
 
             using (var connection = new SqlConnection(_connectionString))
             {
