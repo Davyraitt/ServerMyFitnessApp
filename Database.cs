@@ -49,7 +49,7 @@ namespace ServerMyFitnessApp
                         command.Parameters.AddWithValue("@fiber", completeFoodList[i].Fibers);
 
                         if (completeFoodList[i].FoodContents == null)
-                            command.Parameters.AddWithValue("@contents", "No Food Content Avaiable");
+                            command.Parameters.AddWithValue("@contents", "No Food Content Available");
 
                         else
                             command.Parameters.AddWithValue("@contents", completeFoodList[i].FoodContents);

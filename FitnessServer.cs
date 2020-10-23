@@ -28,13 +28,13 @@ namespace ServerMyFitnessApp
             Console.WriteLine("Starting server and waiting for clients.. on port 15243");
 
 
-            //Uncomment this to fill the database with fooditems
-            // new Thread(() =>
-            // {
-            //     Thread.CurrentThread.IsBackground = true;
-            //     //Retreiving some fooditems
-            //     GetFoodWithAPI();
-            // }).Start();
+            // Uncomment this to fill the database with fooditems
+             // new Thread(() =>
+             // {
+             //     Thread.CurrentThread.IsBackground = true;
+             //     //Retreiving some fooditems
+             //     GetFoodWithAPI();
+             // }).Start();
 
             _listener = new TcpListener(IPAddress.Any, 15243);
             _listener.Start();
@@ -105,6 +105,10 @@ namespace ServerMyFitnessApp
             _foodKeyWords.Add("Chocolate");
             _foodKeyWords.Add("Champagne");
             _foodKeyWords.Add("Coffee");
+            _foodKeyWords.Add("Apple");
+            _foodKeyWords.Add("Water");
+            _foodKeyWords.Add("Fanta");
+            _foodKeyWords.Add("Coke");
         }
 
 
