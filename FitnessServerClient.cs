@@ -107,10 +107,12 @@ namespace ServerMyFitnessApp
 
                     if (match)
                     {
+                        Console.WriteLine("Writing back: Password is OK");
                         Write("FitnessClientLogin\r\nok");
                     }
                     else
                     {
+                        Console.WriteLine("Writing back: Password is wrong");
                         Write("FitnessClientLogin\r\nerror\r\nIncorrect password");
                     }
 

@@ -27,12 +27,14 @@ namespace ServerMyFitnessApp
 
             Console.WriteLine("Starting server and waiting for clients.. on port 15243");
 
-            new Thread(() =>
-            {
-                Thread.CurrentThread.IsBackground = true;
-                //Retreiving some fooditems
-                GetFoodWithAPI();
-            }).Start();
+
+            //Uncomment this to fill the database with fooditems
+            // new Thread(() =>
+            // {
+            //     Thread.CurrentThread.IsBackground = true;
+            //     //Retreiving some fooditems
+            //     GetFoodWithAPI();
+            // }).Start();
 
             _listener = new TcpListener(IPAddress.Any, 15243);
             _listener.Start();
