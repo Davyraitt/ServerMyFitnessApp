@@ -6,6 +6,11 @@ namespace ClientMyFitnessApp
 
     public class FoodItem
     {
+
+        /* FoodItem class
+       * An object fooditem contains specific details from a certain food. Every food you add gets its own object. 
+       *
+      * */
         public string Name
         {
             get; set;

@@ -12,6 +12,8 @@ namespace ServerMyFitnessApp
 
     class FitnessServerClient
     {
+
+        //Variables
         public bool isOnline
         {
             get; set;
@@ -22,72 +24,99 @@ namespace ServerMyFitnessApp
             get; set;
         }
 
-        private TcpClient _tcpClient;
-        private NetworkStream _stream;
-        private byte[] _buffer = new byte[1024];
-        private string _totalBuffer = "";
+        private TcpClient tcpClient;
+        private NetworkStream stream;
+        private byte[] buffer = new byte[1024];
+        private string totalBuffer = "";
 
 
         public FitnessServerClient(TcpClient tcpClient)
         {
-            this._tcpClient = tcpClient;
+            //constructor setting variables we are online etc..
+            this.tcpClient = tcpClient;
             isOnline = true;
-            _stream = this._tcpClient.GetStream();
-            _stream.BeginRead(_buffer, 0, _buffer.Length, new AsyncCallback(OnRead), null);
+
+            //Getting the stream from the tcpclient
+            stream = this.tcpClient.GetStream();
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(Read), null);
+            //When the async method finish the processing,
+            //AsyncCallback method is automatically called,
+            //where post processing statements can be executed.
+            //With this technique there is no need to poll or wait for the async thread to complete
         }
 
 
 
 
-        private void OnRead(IAsyncResult ar)
+        private void Read(IAsyncResult ar)
         {
             try
             {
-                int receivedBytes = _stream.EndRead(ar);
-                string receivedText = System.Text.Encoding.ASCII.GetString(_buffer, 0, receivedBytes);
+                //gets the bytes we received from the ar
+                int receivedBytes = stream.EndRead(ar);
+
+                //converts the bytes to a string
+                string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
+
+                //prints the text we received
                 for (int i = 0; i < receivedBytes; i++)
                 {
                     Console.WriteLine(receivedText[i]);
                 }
 
-                byte[] PartialBuffer = _buffer.Take(receivedBytes).ToArray();
+                //Takes the receivedbytes and makes an bytearray
+                byte[] PartialBuffer = buffer.Take(receivedBytes).ToArray();
+
+                //Decrypt the received bytearray
                 string Decrypted = Crypting.DecryptStringFromBytes(PartialBuffer);
-                _totalBuffer += Decrypted;
+
+                //Adds the decrypted string to the totalbuffer
+                totalBuffer += Decrypted;
             }
             catch (IOException)
             {
-                //FitnessServer.Disconnect(this);
                 return;
             }
 
-            while (_totalBuffer.Contains("\r\n\r\n"))
+            //Now we are going to read.. as long as the buffer contains 2 newlines
+            while (totalBuffer.Contains("\r\n\r\n"))
             {
-                string packet = _totalBuffer.Substring(0, _totalBuffer.IndexOf("\r\n\r\n"));
-                _totalBuffer = _totalBuffer.Substring(_totalBuffer.IndexOf("\r\n\r\n") + 4);
+                //Gets the first part of the TotalBuffer packet
+                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
+                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
+
+                //Adds the packetdata to the stringarray
                 string[] packetData = Regex.Split(packet, "\r\n");
+
+                //Calls the method processdata 
                 ProcessData(packetData);
             }
 
-            _stream.BeginRead(_buffer, 0, _buffer.Length, new AsyncCallback(OnRead), null);
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(Read), null);
         }
 
         private void ProcessData(string[] packetData)
         {
-            Console.WriteLine($"Got a packet: {packetData[0]}");
+            // Console.WriteLine($"Got a packet: {packetData[0]}");
+
+
             switch (packetData[0])
             {
+                //If we receive a Login packet:
                 case "FitnessClientLogin":
-                    //init stuff
+                    //setting up temporary variables
                     string line;
                     int counter = 0;
+                    bool match = false;
                     string loginUsername = packetData[1];
                     string loginPassword = packetData[2];
-
-                    // Read the file and display it line by line.  
                     System.IO.StreamReader file = new System.IO.StreamReader(@"../../../LoginDB.txt");
-                    bool match = false;
+
+
+                    // Read the file line by line, keeps reading till the last line
                     while ((line = file.ReadLine()) != null)
                     {
+                        //We split the username and password by using ;, so we split it here
                         string[] words = line.Split(";");
                         string tempLogin = words[0];
                         string tempPassword = words[1];
@@ -96,40 +125,47 @@ namespace ServerMyFitnessApp
                                           Crypting.EncryptStringToString(loginUsername));
                         Console.WriteLine("Query: Does " + tempPassword + "match with " +
                                           Crypting.EncryptStringToString(loginPassword));
+
+                        //If the username and password entered matches with the one in our .txt database...
                         if (tempLogin.Equals((Crypting.EncryptStringToString(loginUsername))) &&
                             tempPassword.Equals(Crypting.EncryptStringToString(loginPassword)))
                         {
                             match = true;
                         }
 
+
                         counter++;
                     }
 
                     if (match)
                     {
+                        //If we have a match we write back the password is OK
                         Console.WriteLine("Writing back: Password is OK");
                         Write("FitnessClientLogin\r\nok");
                     }
                     else
                     {
+                        //Writing back: Password is wrong, we dont have a match
                         Console.WriteLine("Writing back: Password is wrong");
                         Write("FitnessClientLogin\r\nerror\r\nIncorrect password");
                     }
 
+                    //Close the file
                     file.Close();
 
 
                     break;
 
+
+                //If we receive a Register packet:
                 case "FitnessClientRegister":
 
                     try
                     {
+                        //Gets the received data
                         string registerUsername = packetData[1];
                         string registerPassword = packetData[2];
                         string otherData = packetData[3];
-
-                        Console.WriteLine("We received this string... " + otherData);
 
                         //Encrypting
                         string encryptedUsernameString = Crypting.EncryptStringToString(registerUsername);
@@ -153,13 +189,17 @@ namespace ServerMyFitnessApp
                         //
                         // }
 
+                        //Writing the user to the database also
                         Database.WriteUserToDatabase(registerUsername, age, cm, kg, gender);
 
+
+                        //Writing to the registerclient we succesfully did everything.
                         Write("FitnessClientRegister\r\nok\r\nok");
                         sw.Close();
                     }
                     catch (Exception e)
                     {
+                        //Writing to the registerclient we failed registering.
                         Write("FitnessClientRegister\r\nerror\r\nexception caught" + e.Message);
                         throw;
                     }
@@ -170,30 +210,27 @@ namespace ServerMyFitnessApp
             }
         }
 
-        private bool AssertPacketData(string[] packetData, int requiredLength)
-        {
-            if (packetData.Length < requiredLength)
-            {
-                Write("error");
-                return false;
-            }
-
-            return true;
-        }
 
         public void Write(string data)
         {
-            var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
+            //key and initialization vector (IV).
 
-            var dataStringEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
+            //Adds  the data we want to write to an array
+            byte[] dataAsBytes = System.Text.Encoding.ASCII.GetBytes(data + "\r\n\r\n");
 
+            //Encrypting the array..
+            byte[] dataArrayEncrypted = Crypting.EncryptStringToBytes(data + "\r\n\r\n");
+
+            //Checking
             Debug.WriteLine("Non encrypted.. " + Encoding.ASCII.GetString(dataAsBytes));
 
-            Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataStringEncrypted));
+            Debug.WriteLine("Encrypted " + Encoding.ASCII.GetString(dataArrayEncrypted));
 
-            _stream.Write(dataStringEncrypted, 0, dataStringEncrypted.Length);
+            //Wrie the encrypted byte[]
+            stream.Write(dataArrayEncrypted, 0, dataArrayEncrypted.Length);
 
-            _stream.Flush();
+            //Empty the stream
+            stream.Flush();
         }
     }
 }
